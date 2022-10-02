@@ -1,6 +1,6 @@
 # web-component, branch "main"
 
-В данном репозитории находится api, позволяющий вам создавать ui-элементы, используя веб-компоненты. Он написан на языке `TypeScript` и расположен в каталоге `/src/core/web-component`. Вы можете познакомиться с примером его использования, перейдя по [ссылке](https://github.com/EranosyanEduard/web-component-core/tree/example).
+В данном репозитории находится api, позволяющий вам создавать ui-элементы, используя веб-компоненты. Он написан на языке `TypeScript` и расположен в каталоге `/src/core/web-component`. Вы можете познакомиться с примером его использования, перейдя по [ссылке](https://github.com/EranosyanEduard/web-component/tree/example).
 
 ## Описание API
 
