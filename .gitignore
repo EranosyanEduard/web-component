@@ -1,0 +1,10 @@
+# Build
+.parcel-cache
+dist
+
+# Editors
+.idea
+.vscode
+
+# NodeJS
+node_modules
