@@ -5,9 +5,13 @@
   "main": "index.js",
   "scripts": {
     "prelint": "prettier --write src",
-    "lint": "eslint src --fix"
+    "lint": "eslint src --fix",
+    "start": "parcel --open --port 8080"
   },
   "source": "src/www/index.html",
+  "alias": {
+    "src": "./src"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/EranosyanEduard/web-component.git"

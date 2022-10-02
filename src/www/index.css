@@ -1,0 +1,23 @@
+body {
+  margin: 0;
+}
+
+.theme {
+  --base-unit-px: 4px;
+}
+
+.theme_mode_light {
+  --color-bg-base: #ebeff5;
+  --color-error-base: #ce574a;
+  --color-grey-base: #a9a9a9;
+  --color-primary-base: #1a965a;
+  --color-primary-lighten-5: rgb(49 159 98 / 20%);
+  --color-secondary-base: #030724;
+}
+
+#app {
+  background-color: var(--color-bg-base);
+  display: flex;
+  color: var(--color-secondary-base);
+  min-height: 100vh;
+}
