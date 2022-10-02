@@ -233,13 +233,13 @@ export default MyComponent
      * веб-компонента, т.е. повторный вызов метода **render**. По умолчанию
      * сравнение значений выполняется с помощью оператора "===".
      */
-    compare: (this: Context, next: Value, prev: Value) => boolean
+    compare?: (this: Context, next: Value, prev: Value) => boolean
 
     /**
      * @description
      * Функция, вызов которой происходит при изменении значения.
      */
-    observe: (this: Context, next: Value, prev: Value) => void
+    observe?: (this: Context, next: Value, prev: Value) => void
   }
   ```
 
@@ -319,7 +319,7 @@ export default MyComponent
      * Название события. По умолчанию используется название свойства,
      * преобразованное в kebab case.
      */
-    event: string
+    event?: string
   }
   ```
 
@@ -404,7 +404,7 @@ export default MyComponent
      * происходить "обновление" стилей. При отсутствии зависимостей стили
      * вычисляются однажды. По умолчанию пустой массив.
      */
-    deps: string[]
+    deps?: string[]
   }
   ```
 
