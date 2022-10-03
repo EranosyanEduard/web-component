@@ -226,11 +226,8 @@ function comp(
       }
     }
 
-    if (is.undef(customElements.get(tagName))) {
-      customElements.define(tagName, Component)
-      if (is.fun(whenDefined)) {
-        whenDefined(customElements.whenDefined(tagName))
-      }
+    if (is.fun(whenDefined)) {
+      whenDefined(customElements.whenDefined(tagName))
     }
 
     return Component

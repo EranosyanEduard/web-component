@@ -3,5 +3,7 @@ import { ITemplate } from './models/template'
 import { html, map, when } from './template'
 import { defineComponents } from './utils'
 
+const Util = { defineComponents, map, when }
+
 export * as Decorator from './decorators'
-export { defineComponents, html, map, Style, ITemplate as Template, WebComponent, when }
+export { html, Style, ITemplate as Template, Util, WebComponent }

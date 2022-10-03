@@ -1,3 +1,5 @@
+import is from 'relax-is/src'
+
 /**
  * Преобразовать аргумент формата camelCase в формат kebab-case.
  * @param arg - Идентификатор.
@@ -8,8 +10,15 @@ export function camelToKebab(arg: string): string {
 
 /**
  * Инициализировать веб-компоненты, создав их экземпляры.
- * @param Comps - Список веб-компонентов.
+ * @param comps - Список веб-компонентов.
  */
-export function defineComponents(...Comps: Array<typeof HTMLElement>): void {
-  Comps.forEach((Comp) => console.info(`Веб-компонент ${new Comp().constructor.name} определен`))
+export function defineComponents(
+  ...comps: Array<{ cons: typeof HTMLElement; name: string }>
+): void {
+  comps.forEach((comp) => {
+    if (is.undef(customElements.get(comp.name))) {
+      customElements.define(comp.name, comp.cons)
+      console.info(`Веб-компонент ${comp.name} определен`)
+    }
+  })
 }
