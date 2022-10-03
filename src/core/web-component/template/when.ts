@@ -13,7 +13,7 @@ let cache: CacheWhen<TDecorator.TWebComponent> | null = null
 function when<K extends string>(
   context: TDecorator.TWebComponent,
   action: K,
-  actions: Readonly<Dict<() => TTemplate.ITemplate, K>>
+  actions: Readonly<Dict<() => { html: TTemplate.ITemplate; noCache?: boolean }, K>>
 ): Template<TDecorator.TWebComponent> {
   cache ??= new WeakMap()
 
@@ -35,13 +35,15 @@ function when<K extends string>(
       return map
     })()
 
-  const html = actions[action]()
+  const { html, noCache = false } = actions[action]()
 
   return (
     items.get(action)?.values(html.values) ??
     (() => {
       const template = new Template({ context, ...html })
-      items.set(action, template)
+      if (!noCache) {
+        items.set(action, template)
+      }
       return template
     })()
   )
