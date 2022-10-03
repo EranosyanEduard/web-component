@@ -1,9 +1,6 @@
 import { Style, WebComponent } from './models/decorators'
 import { ITemplate } from './models/template'
-import { html, map, when } from './template'
-import { defineComponents } from './utils'
-
-const Util = { defineComponents, map, when }
+import { html } from './template'
 
 export * as Decorator from './decorators'
-export { html, Style, ITemplate as Template, Util, WebComponent }
+export { html, Style, ITemplate as Template, WebComponent }
