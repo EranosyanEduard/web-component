@@ -130,6 +130,26 @@ const destroyTemplates: Parameters<typeof getStore<'show' | 'when', TD.TWebCompo
   })
 }
 
+function show(
+  context: TD.TWebComponent,
+  id: StoreShowOrWhenKey,
+  index: number,
+  factory: () => TT.ITemplate
+): Template<typeof context> {
+  const template = getTemplate(getStore('show', context, destroyTemplates), id, {
+    context,
+    ...factory()
+  })
+
+  template.elements.forEach((el, idx) => {
+    if (el instanceof HTMLElement) {
+      el.style.display = idx === index ? '' : 'none'
+    }
+  })
+
+  return template
+}
+
 function when<K extends StoreShowOrWhenKey>(
   context: TD.TWebComponent,
   caseKey: K,
@@ -149,4 +169,4 @@ function when<K extends StoreShowOrWhenKey>(
   )
 }
 
-export { map, when }
+export { map, show, when }
