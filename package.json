@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "prelint": "prettier --write src",
-    "lint": "eslint src --fix"
+    "lint": "eslint src --fix",
+    "start": "parcel --open --port 8080"
+  },
+  "alias": {
+    "src": "./src"
   },
   "source": "src/www/index.html",
   "repository": {
