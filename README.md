@@ -695,6 +695,75 @@ export default MyComponent
 
   **Примечание**: в качестве ключей HashMap используются объекты - элементы списка. Таким образом, чтобы получить преимущества кеширования необходимо, чтобы ссылки на такие объекты не изменялись.
 
+- `show`
+
+  назначение: условный рендер;
+
+  ```ts
+  declare function show<Context extends TWebComponent, K extends number | string>(
+    context: Context,
+    id: K,
+    index: number,
+    factory: () => ReturnType<typeof html>
+  ): Template<Context>
+  ```
+
+  пример:
+
+  ```ts
+  // Some.comp.ts
+  import { Decorator, html, WebComponent } from 'core/web-component'
+  import { show } from 'core/web-component/util'
+
+  @Decorator.comp({
+    name: 'some-comp',
+    shadow: {
+      mode: 'open'
+    }
+  })
+  class SomeComponent extends HTMLElement implements WebComponent {
+    @Decorator.prop<string, SomeComponent>()
+    private _spanIndex: 0 | 1 | 2 = 0
+
+    render(): ReturnType<typeof html> {
+      return html`
+        <div>
+          ${show(this, 'SHOW_SPAN', this._spanIndex, () => {
+            return html`
+              <span>a</span>
+              <span>b</span>
+              <span>c</span>
+            `
+          })}
+        </div>
+        <button onclick=${this.#toggleSpan}>Toggle</button>
+      `
+    }
+
+    #toggleSpan(_evt: MouseEvent): void {
+      switch (this._spanIndex) {
+        case 0:
+          this._spanIndex = 1
+          break
+        case 1:
+          this._spanIndex = 2
+          break
+        case 2:
+          this._spanIndex = 0
+          break
+        default:
+          throw new Error(`Unexpected span index: ${this._spanIndex}`)
+      }
+    }
+  }
+
+  export default SomeComponent
+  ```
+
+  Польза данной утилиты заключается в том, что она обеспечивает условный рендер элементов, созданных на основе результата вызова функции-фабрики (последний аргумент функции `show`). Данные элементы немедленно добавляются в разметку, а также кешируются. Функция `show` принимает решение о том, какой элемент необходимо отобразить, сравнивая аргумент `index` с индексом элемента.
+
+  **Примечание**: в случае, если в рамках одного веб-компонента, вы несколько раз используете утилиту `show`, то необходимо сделать так, чтобы аргумент `id` (2-ой по порядку аргумент функции) был уникальным.
+
 - `when`
 
   назначение: условный рендер;
