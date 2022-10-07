@@ -57,7 +57,7 @@ const getTemplate = <S extends Store<keyof Cache>, Ctx extends TD.TWebComponent>
   store: S,
   key: Parameters<S['get']>[0],
   templateParams: ConstructorParameters<typeof Template<Ctx>>[0],
-  onTemplateCreated?: (store: S, template: Template<Ctx>) => void
+  onTemplateCreated?: (template: Template<Ctx>) => void
 ): Template<Ctx> => {
   const unsafeKey = key as never
 
@@ -68,7 +68,9 @@ const getTemplate = <S extends Store<keyof Cache>, Ctx extends TD.TWebComponent>
       const template = new Template(templateParams)
 
       if (is.fun(onTemplateCreated)) {
-        onTemplateCreated(store, template)
+        onTemplateCreated(template)
+      } else {
+        store.set(unsafeKey, template)
       }
 
       return template
@@ -136,10 +138,8 @@ function show(
   index: number,
   factory: () => TT.ITemplate
 ): Template<typeof context> {
-  const template = getTemplate(getStore('show', context, destroyTemplates), id, {
-    context,
-    ...factory()
-  })
+  const store = getStore('show', context, destroyTemplates)
+  const template = getTemplate(store, id, { context, ...factory() })
 
   template.elements.forEach((el, idx) => {
     if (el instanceof HTMLElement) {
@@ -156,17 +156,11 @@ function when<K extends StoreShowOrWhenKey>(
   cases: Readonly<Record<K, () => { html: TT.ITemplate; noCache?: boolean }>>
 ): Template<typeof context> {
   const { html, noCache = false } = cases[caseKey]()
+  const store = getStore('when', context, destroyTemplates)
 
-  return getTemplate(
-    getStore('when', context, destroyTemplates),
-    caseKey,
-    { context, ...html },
-    (store, template) => {
-      if (!noCache) {
-        store.set(caseKey, template)
-      }
-    }
-  )
+  return getTemplate(store, caseKey, { context, ...html }, (template) => {
+    if (!noCache) store.set(caseKey, template)
+  })
 }
 
 export { map, show, when }
