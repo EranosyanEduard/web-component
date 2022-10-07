@@ -769,7 +769,7 @@ export default MyComponent
   назначение: условный рендер;
 
   ```ts
-  declare function when<Context extends TWebComponent, K extends string>(
+  declare function when<Context extends TWebComponent, K extends number | string>(
     context: Context,
     action: K,
     actions: Record<K, { html: ReturnType<typeof html>; noCache?: boolean }>
