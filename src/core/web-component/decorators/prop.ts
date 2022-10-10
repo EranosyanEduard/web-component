@@ -1,9 +1,9 @@
 import is from 'relax-is/src'
-import { TDecorator } from '../models'
+import { TDecorator as TD } from '../models'
 import { getMetaData } from './utils'
 
 function prop<V = unknown, Ctx extends HTMLElement = HTMLElement>(
-  params: Partial<Readonly<TDecorator.PropParams<V, Ctx>>> = {}
+  params: Partial<Readonly<TD.PropParams<V, Ctx>>> = {}
 ): PropertyDecorator {
   const { compare = null, observe = null } = params
 

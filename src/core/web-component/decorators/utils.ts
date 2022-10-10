@@ -1,5 +1,5 @@
 import is from 'relax-is/src'
-import { TDecorator } from '../models'
+import { TDecorator as TD } from '../models'
 import { camelToKebab } from '../utils'
 
 /**
@@ -27,7 +27,7 @@ export function createEvent<V>(event: string, detail: CustomEvent<V>['detail']):
  * Создать строковое представление стилей веб-компонента.
  * @param rules - Стили веб-компонента.
  */
-export function createStyle(rules: ReturnType<TDecorator.Style>): string {
+export function createStyle(rules: ReturnType<TD.Style>): string {
   return is.obj(rules)
     ? Object.entries(rules).reduce((styleAcc, [selector, rule]) => {
         const nestedRules: Array<typeof rules> = []
@@ -59,16 +59,15 @@ export function createStyle(rules: ReturnType<TDecorator.Style>): string {
  * @param target - Источник мета-данных.
  * @param key - Категория мета-данных.
  */
-export function getMetaData<
-  Ctx extends HTMLElement,
-  K extends keyof TDecorator.MetaData<Ctx, any>,
-  V
->(target: object, key: K): Pick<TDecorator.MetaData<Ctx, V>, K> {
-  if (!Reflect.has(target, TDecorator.allMetaData)) {
-    Reflect.set(target, TDecorator.allMetaData, {})
+export function getMetaData<Ctx extends HTMLElement, K extends keyof TD.MetaData<Ctx, any>, V>(
+  target: object,
+  key: K
+): Pick<TD.MetaData<Ctx, V>, K> {
+  if (!Reflect.has(target, TD.allMetaData)) {
+    Reflect.set(target, TD.allMetaData, {})
   }
 
-  const metaData: TDecorator.MetaData<Ctx, V> = Reflect.get(target, TDecorator.allMetaData)
+  const metaData: TD.MetaData<Ctx, V> = Reflect.get(target, TD.allMetaData)
 
   if (is.undef(metaData[key])) {
     metaData[key] = new Map()
@@ -79,29 +78,29 @@ export function getMetaData<
 
 // #region "DEFAULT CONVERTERS"
 
-const BOOL_CONVERTER: TDecorator.Converter<boolean> = {
+const BOOL_CONVERTER: TD.Converter<boolean> = {
   toAttr: (v) => v.toString(),
   toProp: (v) => v === true.toString()
 }
 
-const NUM_CONVERTER: TDecorator.Converter<number> = {
+const NUM_CONVERTER: TD.Converter<number> = {
   toAttr: (v) => v.toString(),
   toProp: (v) => parseFloat(v)
 }
 
-const OBJ_CONVERTER: TDecorator.Converter<object> = {
+const OBJ_CONVERTER: TD.Converter<object> = {
   toAttr: (v) => JSON.stringify(v),
   toProp: (v) => JSON.parse(v)
 }
 
-const STR_CONVERTER: TDecorator.Converter<string> = {
+const STR_CONVERTER: TD.Converter<string> = {
   toAttr: (v) => v,
   toProp: (v) => v
 }
 
 export const converters: Record<
-  Exclude<TDecorator.Converter<never>, object>,
-  Extract<TDecorator.Converter<any>, object>
+  Exclude<TD.Converter<never>, object>,
+  Extract<TD.Converter<any>, object>
 > = {
   boolean: BOOL_CONVERTER,
   number: NUM_CONVERTER,

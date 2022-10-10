@@ -1,9 +1,9 @@
 import is from 'relax-is/src'
-import { TDecorator } from '../models'
+import { TDecorator as TD } from '../models'
 import { converters, createAttrName, createEvent, getMetaData, syncEventPrefix } from './utils'
 
 function attr<V = unknown, Ctx extends HTMLElement = HTMLElement>(
-  params: Partial<Readonly<TDecorator.AttrParams<V, Ctx>>> = {}
+  params: Partial<Readonly<TD.AttrParams<V, Ctx>>> = {}
 ): PropertyDecorator {
   const {
     compare = null,
@@ -25,8 +25,8 @@ function attr<V = unknown, Ctx extends HTMLElement = HTMLElement>(
       throw new Error(`Атрибут ${attrName} уже используется свойством ${attr.prop.key}`)
     }
 
-    if (!Reflect.has(target.constructor, TDecorator.attrsMetaData)) {
-      Object.defineProperty(target.constructor, TDecorator.attrsMetaData, {
+    if (!Reflect.has(target.constructor, TD.attrsMetaData)) {
+      Object.defineProperty(target.constructor, TD.attrsMetaData, {
         get: (): string[] => [...attrs.keys()]
       })
     }

@@ -1,11 +1,11 @@
 import is from 'relax-is/src'
-import { TTemplate } from '../models'
+import { TTemplate as TT } from '../models'
 import { bindRegExpG, contentHandlers, eventAttrPrefix, isBindingPattern } from './utils'
 
 class Template<Ctx extends HTMLElement> {
   readonly elements: Element[]
 
-  readonly #bindings: TTemplate.Binding[]
+  readonly #bindings: TT.Binding[]
 
   readonly #context: Ctx
 
@@ -13,7 +13,7 @@ class Template<Ctx extends HTMLElement> {
 
   readonly #values: unknown[]
 
-  constructor(init: Readonly<Omit<TTemplate.ITemplateInit<Ctx>, 'mode'>>) {
+  constructor(init: Readonly<Omit<TT.ITemplateInit<Ctx>, 'mode'>>) {
     const { context, template, values } = init
 
     this.#bindings = []
@@ -170,7 +170,7 @@ class Template<Ctx extends HTMLElement> {
     nodeCache.forEach(({ fragment, node }) => node.parentElement?.replaceWith(fragment, node))
   }
 
-  #useBinding(binding: TTemplate.Binding, next: unknown): void | never {
+  #useBinding(binding: TT.Binding, next: unknown): void | never {
     const { type } = binding
 
     switch (type) {

@@ -1,5 +1,5 @@
 import is from 'relax-is/src'
-import { TTemplate } from '../models'
+import { TTemplate as TT } from '../models'
 import { camelToKebab } from '../utils'
 import Template from './Template'
 
@@ -18,8 +18,8 @@ export const bindRegExpG = new RegExp(bindingPattern, 'g')
 
 // #endregion "BINDING"
 
-function isHtmlTemplate(content: object): content is TTemplate.ITemplate {
-  const [templateKey, valuesKey]: Array<keyof TTemplate.ITemplate> = ['template', 'values']
+function isHtmlTemplate(content: object): content is TT.ITemplate {
+  const [templateKey, valuesKey]: Array<keyof TT.ITemplate> = ['template', 'values']
   return is.str(Reflect.get(content, templateKey)) && is.arr(Reflect.get(content, valuesKey))
 }
 

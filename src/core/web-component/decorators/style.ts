@@ -1,8 +1,8 @@
 import is from 'relax-is/src'
-import { TDecorator } from '../models'
+import { TDecorator as TD } from '../models'
 import { getMetaData } from './utils'
 
-function style(params: Partial<Readonly<TDecorator.IStyleParams>> = {}): PropertyDecorator {
+function style(params: Partial<Readonly<TD.IStyleParams>> = {}): PropertyDecorator {
   const { deps = [] } = params
 
   return (target, propertyKey) => {

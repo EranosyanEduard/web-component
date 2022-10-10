@@ -1,36 +1,36 @@
 import is from 'relax-is/src'
-import { TDecorator, TTemplate } from '../models'
+import { TDecorator as TD, TTemplate as TT } from '../models'
 import { isBindingPattern, render } from '../template'
 import { createStyle } from './utils'
 
 function comp(
-  params: Readonly<TDecorator.ComponentParams>
+  params: Readonly<TD.ComponentParams>
 ): <T extends CtorMixin<HTMLElement>>(Target: T) => T {
   const { name: tagName, shadow = null, whenDefined = null } = params
 
   let taskRenderID: number | null = null
 
   return (Target) => {
-    const attrsMetaData: string[] | undefined = Reflect.get(Target, TDecorator.attrsMetaData)
-    Reflect.deleteProperty(Target, TDecorator.attrsMetaData)
+    const attrsMetaData: string[] | undefined = Reflect.get(Target, TD.attrsMetaData)
+    Reflect.deleteProperty(Target, TD.attrsMetaData)
 
-    const Component = class C extends Target implements TDecorator.WebComponent {
-      readonly render!: () => TTemplate.ITemplate;
+    const Component = class C extends Target implements TD.WebComponent {
+      readonly render!: () => TT.ITemplate;
       /**
        * @description
        * Мета-данные, собранные декораторами.
        */
-      readonly [TDecorator.allMetaData]?: Partial<TDecorator.MetaData<C, unknown>>
+      readonly [TD.allMetaData]?: Partial<TD.MetaData<C, unknown>>
       /**
        * @description
        * Корень веб-компонента.
        */
-      readonly #root: TDecorator.Host<C>
+      readonly #root: TD.Host<C>
       /**
        * @description
        * Стили веб-компонента, зависящие от наблюдаемых значений.
        */
-      readonly #styles: Readonly<TDecorator.DependentStyle> = {
+      readonly #styles: Readonly<TD.DependentStyle> = {
         _deps: new Map(),
         on(dependency, cb): void {
           if (this._deps.has(dependency)) {
@@ -66,7 +66,7 @@ function comp(
       }
 
       attributeChangedCallback(name: string, prev: string | null, next: string | null): void {
-        const attrMeta = this[TDecorator.allMetaData]?.attrs?.get(name)
+        const attrMeta = this[TD.allMetaData]?.attrs?.get(name)
 
         if (is.undef(attrMeta)) {
           this.#useLifeCycle('attributeChangedCallback', name, prev, next)
@@ -102,7 +102,7 @@ function comp(
       }
 
       #assignAttrs(): void {
-        this[TDecorator.allMetaData]?.attrs?.forEach((params, key) => {
+        this[TD.allMetaData]?.attrs?.forEach((params, key) => {
           const { converter, prop, validate } = params
           const defaultAttr = this.getAttribute(key)
           const defaultVal: unknown = Reflect.get(this, prop.key)
@@ -140,7 +140,7 @@ function comp(
       }
 
       #assignElems(): void {
-        this[TDecorator.allMetaData]?.elems?.forEach((propertyKey, selector) => {
+        this[TD.allMetaData]?.elems?.forEach((propertyKey, selector) => {
           try {
             const el = this.#root.querySelector(selector)
             Reflect.set(this, propertyKey, el)
@@ -151,7 +151,7 @@ function comp(
       }
 
       #assignProps(): void {
-        this[TDecorator.allMetaData]?.props?.forEach((params, key) => {
+        this[TD.allMetaData]?.props?.forEach((params, key) => {
           const { compare, observe, prop } = params
           const val: typeof prop.val = { next: Reflect.get(this, key) }
 
@@ -173,7 +173,7 @@ function comp(
       #assignStyle(): void {
         const style = document.createElement('style')
 
-        this[TDecorator.allMetaData]?.style?.forEach((params, key) => {
+        this[TD.allMetaData]?.style?.forEach((params, key) => {
           const val: unknown = Reflect.get(this, key)
           if (is.fun(val)) {
             const content: unknown = val()
@@ -216,9 +216,9 @@ function comp(
         }
       }
 
-      #useLifeCycle<K extends keyof TDecorator.IComponentLifeCycle>(
+      #useLifeCycle<K extends keyof TD.IComponentLifeCycle>(
         name: K,
-        ...args: Parameters<TDecorator.IComponentLifeCycle[K]>
+        ...args: Parameters<TD.IComponentLifeCycle[K]>
       ): void {
         // @ts-expect-error
         const method = super[name]
