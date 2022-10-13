@@ -18,12 +18,13 @@ interface IRenderOptions<M extends 'connected' | 'disconnected'> {
 }
 
 export interface ITemplate {
-  template: string
+  create: Factory<string>
   values: unknown[]
 }
 
-export interface ITemplateInit<Ctx extends HTMLElement> extends IRenderOptions<'connected'>, ITemplate {
+export interface ITemplateInit<Ctx extends HTMLElement> extends IRenderOptions<'connected'> {
   context: Ctx
+  template: ITemplate
 }
 
 export type RenderOptions<Ctx extends HTMLElement> = ITemplateInit<Ctx> | IRenderOptions<'disconnected'>

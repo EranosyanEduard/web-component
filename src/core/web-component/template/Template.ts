@@ -14,12 +14,15 @@ class Template<Ctx extends HTMLElement> {
   readonly #values: unknown[]
 
   constructor(init: Readonly<Omit<TT.ITemplateInit<Ctx>, 'mode'>>) {
-    const { context, template, values } = init
+    const {
+      context,
+      template: { create: createTemplate, values }
+    } = init
 
     this.#bindings = []
     this.#context = context
     this.#root = document.createElement('div')
-    this.#root.innerHTML = template
+    this.#root.innerHTML = createTemplate()
     this.elements = Array.from(this.#root.children)
 
     this.#values = new Proxy(values, {

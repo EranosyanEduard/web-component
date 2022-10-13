@@ -12,6 +12,12 @@ type Dict<V = unknown, K extends string = string> = Record<K, V>
 
 /**
  * @description
+ * Тип, представляющий фабрику произвольных значений.
+ */
+type Factory<V = unknown> = () => V
+
+/**
+ * @description
  * Тип, позволяющий выбрать необязательные поля объекта.
  */
 type Option<T extends object, K extends keyof T> = Partial<Pick<T, K>> & Omit<T, K>

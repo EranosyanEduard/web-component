@@ -6,7 +6,9 @@ const cachedComponents: WeakMap<TD.Host<HTMLElement>, Template<HTMLElement>> = n
 
 export function html(strings: TemplateStringsArray, ...values: unknown[]): TT.ITemplate {
   return {
-    template: strings.raw.reduce((acc, str, idx) => `${acc}${getBindingPattern(idx - 1)}${str}`),
+    create() {
+      return strings.raw.reduce((acc, str, idx) => `${acc}${getBindingPattern(idx - 1)}${str}`)
+    },
     values
   }
 }
@@ -19,7 +21,7 @@ export function render<T extends HTMLElement>(
     case 'connected':
       if (cachedComponents.has(host)) {
         const template = cachedComponents.get(host)
-        template?.values(options.values)
+        template?.values(options.template.values)
       } else {
         const { mode: _mode, ...templateOpts } = options
         const template = new Template(templateOpts)

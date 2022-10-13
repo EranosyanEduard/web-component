@@ -204,16 +204,7 @@ function comp(
       }
 
       #render(): void {
-        const { template, values } = this.render()
-
-        if (is.not.empty.str(template)) {
-          render(this.#root, {
-            context: this,
-            mode: 'connected',
-            template,
-            values
-          })
-        }
+        render(this.#root, { context: this, mode: 'connected', template: this.render() })
       }
 
       #useLifeCycle<K extends keyof TD.IComponentLifeCycle>(
