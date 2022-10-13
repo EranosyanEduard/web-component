@@ -6,6 +6,7 @@
   "scripts": {
     "prelint": "prettier --write src",
     "lint": "eslint src --fix",
+    "prestart": "rm -fr .parcel-cache dist",
     "start": "parcel --open --port 8080"
   },
   "alias": {

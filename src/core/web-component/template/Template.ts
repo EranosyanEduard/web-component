@@ -4,55 +4,47 @@ import { bindRegExpG, contentHandlers, eventAttrPrefix, isBindingPattern } from 
 
 class Template<Ctx extends HTMLElement> {
   readonly elements: Element[]
-
-  readonly #bindings: TT.Binding[]
-
-  readonly #context: Ctx
-
-  readonly #root: HTMLDivElement
-
-  readonly #values: unknown[]
+  readonly #bindings: Nullable<TT.Binding[]>
+  readonly #values: Nullable<unknown[]>
 
   constructor(init: Readonly<Omit<TT.ITemplateInit<Ctx>, 'mode'>>) {
-    const {
-      context,
-      template: { create: createTemplate, values }
-    } = init
+    const { context, template } = init
 
-    this.#bindings = []
-    this.#context = context
-    this.#root = document.createElement('div')
-    this.#root.innerHTML = createTemplate()
-    this.elements = Array.from(this.#root.children)
+    const root = document.createElement('div')
+    root.innerHTML = template.create()
+    this.elements = Array.from(root.children)
 
-    this.#values = new Proxy(values, {
+    if (is.empty.arr(template.values)) {
+      this.#bindings = null
+      this.#values = null
+      return
+    }
+
+    this.#bindings = Template.#findBindings(root)
+    this.#values = new Proxy(template.values, {
       get: (target, idx: string): unknown => {
-        const i = parseInt(idx)
-        const val = target[i]
-
-        if (is.undef(val)) {
-          return val
-        }
-        return is.fun(val) ? val.bind(this.#context) : val
+        const val = target[parseInt(idx)]
+        return is.fun(val) ? val.bind(context) : val
       },
       set: (target, idx: string, v: unknown) => {
         const i = parseInt(idx)
         const val = target[i]
 
         if (is.not.undef(val) && v !== val) {
-          this.#useBinding(this.#bindings[i], v)
+          Template.#useBinding(context, this.#bindings![i], v)
           target[i] = v
         }
         return true
       }
     })
 
-    this.#findBindings()
-    this.#bindings.forEach((binding, idx) => this.#useBinding(binding, this.#values[idx]))
+    this.#bindings.forEach((binding, idx) => {
+      Template.#useBinding(context, binding, this.#values![idx])
+    })
   }
 
   destroy(): void {
-    this.#bindings.forEach((binding, idx) => {
+    this.#bindings?.forEach((binding, idx) => {
       const { type } = binding
 
       switch (type) {
@@ -62,7 +54,7 @@ class Template<Ctx extends HTMLElement> {
           }
           break
         case 'text': {
-          const val = this.#values[idx]
+          const val = this.#values![idx]
           if (is.arr(val)) {
             val.forEach((v) => {
               if (v instanceof Template) {
@@ -79,13 +71,15 @@ class Template<Ctx extends HTMLElement> {
   }
 
   values(values: unknown[]): this {
-    values.forEach((value, idx) => (this.#values[idx] = value))
+    if (is.not.null(this.#values)) {
+      values.forEach((value, idx) => (this.#values![idx] = value))
+    }
     return this
   }
 
-  #findBindings(): void {
+  static #findBindings(root: HTMLElement): TT.Binding[] {
     const treeWalker = document.createTreeWalker(
-      this.#root,
+      root,
       NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
       (node) => {
         switch (node.nodeType) {
@@ -103,6 +97,7 @@ class Template<Ctx extends HTMLElement> {
       }
     )
 
+    const bindings: TT.Binding[] = []
     const nodeCache: Array<{ fragment: DocumentFragment; node: Node }> = []
 
     while (is.obj(treeWalker.nextNode())) {
@@ -117,7 +112,7 @@ class Template<Ctx extends HTMLElement> {
             const attr = el.attributes[idx]
 
             if (isBindingPattern(attr.name)) {
-              this.#bindings.push({
+              bindings.push({
                 el,
                 name: attr.name,
                 noName: true,
@@ -126,7 +121,7 @@ class Template<Ctx extends HTMLElement> {
               redundantAttrs.push(attr.name)
             } else if (isBindingPattern(attr.value)) {
               if (attr.name.startsWith(eventAttrPrefix)) {
-                this.#bindings.push({
+                bindings.push({
                   el,
                   name: attr.name.slice(eventAttrPrefix.length),
                   remove: null,
@@ -134,7 +129,7 @@ class Template<Ctx extends HTMLElement> {
                 })
                 redundantAttrs.push(attr.name)
               } else {
-                this.#bindings.push({
+                bindings.push({
                   el,
                   name: attr.name,
                   noName: false,
@@ -151,13 +146,13 @@ class Template<Ctx extends HTMLElement> {
           const matches = node.nodeValue?.match(bindRegExpG) as RegExpMatchArray
 
           if (matches.length === 1) {
-            this.#bindings.push({ nodes: [node], type: 'text' })
+            bindings.push({ nodes: [node], type: 'text' })
           } else {
             const fragment = document.createDocumentFragment()
 
             matches.forEach((it) => {
               const textNode = document.createTextNode(it)
-              this.#bindings.push({ nodes: [textNode], type: 'text' })
+              bindings.push({ nodes: [textNode], type: 'text' })
               fragment.append(textNode)
             })
 
@@ -171,9 +166,14 @@ class Template<Ctx extends HTMLElement> {
     }
 
     nodeCache.forEach(({ fragment, node }) => node.parentElement?.replaceWith(fragment, node))
+    return bindings
   }
 
-  #useBinding(binding: TT.Binding, next: unknown): void | never {
+  static #useBinding<Ctx extends HTMLElement>(
+    context: Ctx,
+    binding: TT.Binding,
+    next: unknown
+  ): void | never {
     const { type } = binding
 
     switch (type) {
@@ -225,7 +225,7 @@ class Template<Ctx extends HTMLElement> {
           fragment.append(node)
         } else {
           items.forEach((it) => {
-            const content = contentHandlers.text(it, this.#context)
+            const content = contentHandlers.text(it, context)
             if (is.arr(content)) {
               binding.nodes.push(...content)
               fragment.append(...content)
