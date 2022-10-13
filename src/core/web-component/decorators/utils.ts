@@ -13,7 +13,7 @@ export function createAttrName(propertyKey: string): string {
 /**
  * Создать пользовательское событие.
  * @param event - Название события.
- * @param detail - Полезная негрузка.
+ * @param detail - Полезная нагрузка.
  */
 export function createEvent<V>(event: string, detail: CustomEvent<V>['detail']): CustomEvent<V> {
   return new CustomEvent(event, {

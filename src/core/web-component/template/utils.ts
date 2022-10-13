@@ -19,7 +19,7 @@ export const bindRegExpG = new RegExp(bindingPattern, 'g')
 // #endregion "BINDING"
 
 function isHtmlTemplate(content: object): content is TT.ITemplate {
-  const [templateKey, valuesKey]: Array<keyof TT.ITemplate> = ['template', 'values']
+  const [templateKey, valuesKey]: Array<keyof TT.ITemplate> = ['create', 'values']
   return is.str(Reflect.get(content, templateKey)) && is.arr(Reflect.get(content, valuesKey))
 }
 
@@ -75,7 +75,7 @@ export const contentHandlers = {
         return content.elements
       }
       if (isHtmlTemplate(content)) {
-        return new Template({ context, ...content }).elements
+        return new Template({ context, template: content }).elements
       }
     }
     return document.createTextNode(this.attr.any(content))

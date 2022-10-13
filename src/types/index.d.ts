@@ -30,15 +30,6 @@ type Option<T extends object, K extends keyof T> = Partial<Pick<T, K>> & Omit<T,
 
 /**
  * @description
- * Тип, представляющий пару значений.
- */
-interface IPair<A, B> {
-  first: A
-  second: B
-}
-
-/**
- * @description
  * Тип, представляющий функцию-предикат.
  */
 type Predicate<V = unknown> = (v: V) => boolean
